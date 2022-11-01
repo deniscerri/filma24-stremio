@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from flask import Flask, Response, jsonify, url_for, abort
-from ast import parse
 import json
 from posixpath import split
 from unittest import result
