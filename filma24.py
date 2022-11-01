@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 from lxml import html, etree
 import cloudscraper
 import os, re, sys, getopt
-import json
 import difflib
 import requests
 from time import sleep
