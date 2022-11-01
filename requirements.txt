@@ -1,9 +1,6 @@
 flask
-posixpath
-unittest
 bs4
 lxml
 cloudscraper
-difflib
 requests
 yt_dlp
