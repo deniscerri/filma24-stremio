@@ -244,6 +244,11 @@ def respond_with(data):
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Headers'] = '*'
     return resp
+    
+
+@app.route('/')
+def addon_root():
+    return respond_with('Add /manifest.json in the url')
 
 @app.route('/manifest.json')
 def addon_manifest():
@@ -327,4 +332,4 @@ def addon_stream(type, id):
 
 if __name__ == '__main__':
     from waitress import serve
-    serve(app, host="0.0.0.0", port=os.getenv('PORT', '8080'))
+    serve(app, host="0.0.0.0", port=os.getenv('PORT', '5000'))
