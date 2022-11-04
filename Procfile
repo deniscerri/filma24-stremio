@@ -1,1 +1,1 @@
-Worker: python3 filma24.py
+web: gunicorn server:app
