@@ -5,3 +5,4 @@ cloudscraper
 requests
 yt_dlp
 waitress
+gunicorn
