@@ -141,11 +141,34 @@ def get_video_url(iframe):
         iframe = "https:" + iframe
 
     website = iframe[8:].split(".")[0]
-    mp4 = None
-    if 'vidmoly' in website:
-        mp4 = get_from_vidmoly(iframe)
-        if mp4:
-            return {
+    try:
+        info = yt_dlp.YoutubeDL(
+            {
+                "external_downloader_args": ['-loglevel', 'panic'],
+                "quiet": True
+            }
+            ).extract_info(iframe, download=False)
+        mp4 = info["url"]
+    except:
+        mp4 = None
+    if mp4:
+        return {
+                "url": mp4, 
+                "title": website, 
+                "behaviorHints": {
+                    "notWebReady": True, 
+                    "proxyHeaders": { 
+                        "request": { 
+                            "Referer": iframe,
+                            "User-Agent": "Chrome/97" 
+                        } 
+                    }
+                } 
+            }
+    else:
+        if website in mp4_hosts or iframe.endswith('.mp4'):
+                mp4 = iframe
+                return {
                     "url": mp4, 
                     "title": website, 
                     "behaviorHints": {
@@ -159,29 +182,9 @@ def get_video_url(iframe):
                     } 
                 }
         else:
-            return None
-    else:
-        if website in mp4_hosts or iframe.endswith('.mp4'):
-            mp4 = iframe
-            return {
-                "url": mp4, 
-                "title": website, 
-                "behaviorHints": {
-                    "notWebReady": True, 
-                    "proxyHeaders": { 
-                        "request": { 
-                            "Referer": iframe,
-                            "User-Agent": "Chrome/97" 
-                        } 
-                    }
-                } 
-            }
-        else:
             page = str(request(iframe))
             if page:
-                mp4 = re.findall(r'https://.*[^"].m3u8', page)
-                if not mp4:
-                    mp4 = re.findall(r'https://.*[^\",]*.mp4', page)
+                mp4 = re.findall(r'\b(?:https?|ftp)://[^\s/$.?#].[^\s]*\.(?:m3u[8]?|mp4)\b', page)
                 if not mp4:
                     mp4 = iframe
                 else:
@@ -201,6 +204,8 @@ def get_video_url(iframe):
                 }
             else :
                 return None    
+    
+    
 
 def get_movie_streams():
     page = str(request(Config.url))
