@@ -211,29 +211,22 @@ def get_movie_streams():
     page = str(request(Config.url))
     page = html.fromstring(page).getroottree()
     server_list = page.xpath('//*[@class="player"]/div[1]/a')
-    iframe = page.xpath('//*[@id="plx"]/p/iframe/@src')
-    if not iframe:
-        iframe = page.xpath('//*[@id="plx"]/p/video/source/@src')
-    iframe = iframe[0]
     streams = []
-    vid_url = get_video_url(iframe)
-    if vid_url:
-        streams.append(vid_url)
-    server_list.pop(0)
-
     for r in server_list:
         server_url = Config.url + r.attrib['href']
         page = str(request(server_url))
         page = html.fromstring(page).getroottree()
-        server_list = page.xpath('//*[@class="player"]/div[1]/a')
         iframe = page.xpath('//*[@id="plx"]/p/iframe/@src')
         if not iframe:
             iframe = page.xpath('//*[@id="plx"]/p/video/source/@src')
-        iframe = iframe[0]
-        vid_url = get_video_url(iframe)
-        if vid_url:
-            streams.append(vid_url)
+        if len(iframe) > 0:
+            iframe = iframe[0]
+            vid_url = get_video_url(iframe)
+            if vid_url:
+                streams.append(vid_url)
 
+
+    
     return {'streams': streams}
 
 def get_episode_streams():
@@ -320,9 +313,9 @@ def addon_stream(type, id):
         Config.episode = chunks[2]
 
     imdb_data = json_request(f'https://v2.sg.media-imdb.com/suggestion/{id[0]}/{id}.json')
-    Config.title = imdb_data['d'][0]['l']
+    Config.title = str(list(filter(lambda x: "qid" in x and  x["qid"] =="movie", imdb_data['d']))[0]['l'])
     if (type == 'movie'):
-        Config.title += ' ' + str(imdb_data['d'][0]['y'])
+        Config.title += ' ' + str(list(filter(lambda x: "qid" in x and  x["qid"] =="movie", imdb_data['d']))[0]['y'])
         search()
         print(Config.title)
         streams = get_movie_streams()
